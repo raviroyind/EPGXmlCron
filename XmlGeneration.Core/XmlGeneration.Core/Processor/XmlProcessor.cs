@@ -203,7 +203,8 @@ namespace XmlGeneration.Core.Processor
                                         EpgStartDt = _startDate,
                                         EpgEndDt = _stopDate,
                                         ImportDate = DateTime.Now,
-                                        XmlFileName = Path.GetFileName(fileDetails[0])
+                                        XmlFileName = Path.GetFileName(fileDetails[0]),
+                                        URL2 = !string.IsNullOrEmpty(fileDetails[3]) ? fileDetails[3] : ""
                                     };
 
                                     dataContext.XmlImports.Add(xmlImport);
@@ -361,6 +362,12 @@ namespace XmlGeneration.Core.Processor
                         id = xElements[i].Attributes("id").First().Value;
                         channelName = xElements[i].Value;
 
+                        //Nov-19
+                        if (channelName.Contains("http://"))
+                        {
+                            channelName = channelName.Substring(0, channelName.IndexOf("http:", StringComparison.Ordinal));
+                        }
+
                         if (string.IsNullOrEmpty(channelName))
                         {
                             channelName = xElements[i].Attributes("display-name").First().Value;
@@ -456,7 +463,6 @@ namespace XmlGeneration.Core.Processor
                                     Value = element.Value
                                 };
                             }
-
                         }
                     }
 
@@ -530,11 +536,66 @@ namespace XmlGeneration.Core.Processor
 
                 #endregion Programme Nodes...
 
+                //Nov-19 - Remove any Illegeal characters from filename.
+                outputFileName = GetSafeFilename(outputFileName);
 
                 _tv.Save(OutputFolderPath + outputFileName + ".xml");
                 logger.Info("Generate Output xml -" + outputFileName + ".xml");
 
-                OutputXmlList.Add(OutputFolderPath + outputFileName + ".xml" + "," + _startDate.Date.ToShortDateString() + "," + _stopDate.Date.ToShortDateString());
+
+                #region Generate Additional Xml...
+
+                var _tv2 = new XmlSchema.SecondOutput.tv();
+                XmlSchema.SecondOutput.tvProgramme[] _tvProgrammes2 = new XmlSchema.SecondOutput.tvProgramme[sourceXElements.Count];
+
+
+                iNodeCount = 0;
+                foreach (var item in sourceXElements)
+                {
+                    #region Minutes...
+
+                    var startTime = item.Attributes("start").First().Value;
+                    var epgStartOffset = startTime;
+
+
+                    if (startTime.Contains("+"))
+                        startTime = startTime.Substring(0, startTime.IndexOf('+'));
+
+                    var stopTime = item.Attributes("stop").First().Value;
+
+                    if (stopTime.Contains("+"))
+                        stopTime = stopTime.Substring(0, stopTime.IndexOf('+'));
+
+                    var duration = DateTime.ParseExact(stopTime.Trim(), formatString, CultureInfo.InvariantCulture).Subtract(DateTime.ParseExact(startTime.Trim(), formatString, CultureInfo.InvariantCulture)).TotalMinutes;
+
+
+                    // var date = DateTime.ParseExact(startTime, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+
+                    #endregion Minutes...
+
+                    _tvProgrammes2[iNodeCount] = new XmlGeneration.Core.XmlSchema.SecondOutput.tvProgramme()
+                    {
+                        channel = channelName,
+                        start = GetDateAddingOffset(item.Attributes("start").First().Value, newOffset),
+                        stop = GetDateAddingOffset(item.Attributes("stop").First().Value, newOffset),
+                        title = item.Element("title") != null ? item.Element("title").Value : "",
+                        desc = item.Element("desc") != null ? item.Element("desc").Value : "",
+                        subTitle = item.Element("sub-title") != null ? item.Element("sub-title").Value : "",
+                        date = DateTime.Today,
+                        originid = "",//Find
+                        reserve = "no"
+                    };
+
+                    iNodeCount++;
+                }
+
+                _tv2.programme = _tvProgrammes2;
+
+                _tv2.Save(OutputFolderPath + outputFileName + "_additional" + ".xml");
+
+                #endregion Generate Additional Xml...
+
+                OutputXmlList.Add(OutputFolderPath + outputFileName + ".xml" + "," + _startDate.Date.ToShortDateString() + "," + _stopDate.Date.ToShortDateString() + "," + OutputFolderPath + outputFileName + "_additional" + ".xml");
 
                 Console.WriteLine("Done Processing Channel - " + channelName);
             }

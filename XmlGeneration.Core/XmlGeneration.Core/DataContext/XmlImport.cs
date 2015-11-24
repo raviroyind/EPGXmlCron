@@ -25,5 +25,8 @@ namespace XmlGeneration.Core.DataContext
 
         [StringLength(500)]
         public string URL { get; set; }
+
+        [StringLength(500)]
+        public string URL2 { get; set; }
     }
 }
