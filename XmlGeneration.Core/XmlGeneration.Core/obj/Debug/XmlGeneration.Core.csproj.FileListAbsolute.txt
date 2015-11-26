@@ -8,5 +8,6 @@ D:\Projects\XmlGenerationConsole\XmlGeneration.Core\XmlGeneration.Core\bin\Debug
 D:\Projects\XmlGenerationConsole\XmlGeneration.Core\XmlGeneration.Core\bin\Debug\EntityFramework.xml
 D:\Projects\XmlGenerationConsole\XmlGeneration.Core\XmlGeneration.Core\bin\Debug\EntityFramework.SqlServer.xml
 D:\Projects\XmlGenerationConsole\XmlGeneration.Core\XmlGeneration.Core\bin\Debug\log4net.xml
+D:\Projects\XmlGenerationConsole\XmlGeneration.Core\XmlGeneration.Core\obj\Debug\XmlGeneration.Core.csprojResolveAssemblyReference.cache
 D:\Projects\XmlGenerationConsole\XmlGeneration.Core\XmlGeneration.Core\obj\Debug\XmlGeneration.Core.exe
 D:\Projects\XmlGenerationConsole\XmlGeneration.Core\XmlGeneration.Core\obj\Debug\XmlGeneration.Core.pdb

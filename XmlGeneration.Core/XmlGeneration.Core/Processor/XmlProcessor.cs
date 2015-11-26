@@ -199,12 +199,13 @@ namespace XmlGeneration.Core.Processor
                                 {
                                     var xmlImport = new XmlImport
                                     {
-                                        URL = "../Output/" + Path.GetFileName(fileDetails[0]),
+                                        Url = "../Output/" + Path.GetFileName(fileDetails[0]),
                                         EpgStartDt = _startDate,
                                         EpgEndDt = _stopDate,
                                         ImportDate = DateTime.Now,
                                         XmlFileName = Path.GetFileName(fileDetails[0]),
-                                        URL2 = !string.IsNullOrEmpty(fileDetails[3]) ? fileDetails[3] : ""
+                                        Url2 = !string.IsNullOrEmpty(fileDetails[3]) ? fileDetails[3] : "",
+                                        SourceUrl = !string.IsNullOrEmpty(fileDetails[4]) ? fileDetails[4] : ""
                                     };
 
                                     dataContext.XmlImports.Add(xmlImport);
@@ -536,6 +537,13 @@ namespace XmlGeneration.Core.Processor
 
                 #endregion Programme Nodes...
 
+
+
+                //2.> Nov-25 - Task ID:  1647 (duplicate channel bug ).
+                if (outputFileName.Contains("http://"))
+                {
+                    outputFileName = outputFileName.Substring(0, outputFileName.IndexOf("http:", StringComparison.Ordinal));
+                }
                 //Nov-19 - Remove any Illegeal characters from filename.
                 outputFileName = GetSafeFilename(outputFileName);
 
@@ -595,7 +603,7 @@ namespace XmlGeneration.Core.Processor
 
                 #endregion Generate Additional Xml...
 
-                OutputXmlList.Add(OutputFolderPath + outputFileName + ".xml" + "," + _startDate.Date.ToShortDateString() + "," + _stopDate.Date.ToShortDateString() + "," + OutputFolderPath + outputFileName + "_additional" + ".xml");
+                OutputXmlList.Add(OutputFolderPath + outputFileName + ".xml" + "," + _startDate.Date.ToShortDateString() + "," + _stopDate.Date.ToShortDateString() + "," + "../Output/" + outputFileName + "_additional" + ".xml," + "../SourceXmlFiles/" + Path.GetFileName(sourceXml));
 
                 Console.WriteLine("Done Processing Channel - " + channelName);
             }

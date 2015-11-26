@@ -24,9 +24,12 @@ namespace XmlGeneration.Core.DataContext
         public DateTime? EpgEndDt { get; set; }
 
         [StringLength(500)]
-        public string URL { get; set; }
+        public string Url { get; set; }
 
         [StringLength(500)]
-        public string URL2 { get; set; }
+        public string Url2 { get; set; }
+
+        [StringLength(250)]
+        public string SourceUrl { get; set; }
     }
 }
